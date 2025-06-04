@@ -1,0 +1,131 @@
+<div class="payment-history">
+  <div class="current-month" *ngIf="currentMonthPayment">
+    <h2>Pagamento do Mês Vigente</h2>
+    <div class="payment-card current">
+      <div class="month-header">
+        <h3>{{ months[currentMonthPayment.month] }} {{ currentMonthPayment.year }}</h3>
+        <label class="checkbox-container month-checkbox">
+          <input
+            type="checkbox"
+            [checked]="isMonthFullyPaid(currentMonthPayment)"
+            (change)="toggleMonthPayment(currentMonthPayment)"
+          />
+          <span class="checkmark"></span>
+          Marcar mês como {{ isMonthFullyPaid(currentMonthPayment) ? 'não pago' : 'pago' }}
+        </label>
+      </div>
+      
+      <div class="payment-details">
+        <table>
+          <thead>
+            <tr>
+              <th>Matéria</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Data Pagamento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let subject of currentMonthPayment.subjects; let i = index">
+              <td>{{ subject.name }}</td>
+              <td>R$ {{ subject.amount }}</td>
+              <td>
+                <label class="checkbox-container">
+                  <input
+                    type="checkbox"
+                    [checked]="subject.isPaid"
+                    (change)="togglePayment(currentMonthPayment, i)"
+                  />
+                  <span class="checkmark"></span>
+                  {{ subject.isPaid ? 'Pago' : 'Pendente' }}
+                </label>
+              </td>
+              <td>{{ subject.paymentDate | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">Total do Mês:</td>
+              <td colspan="2">R$ {{ currentMonthPayment.totalAmount }}</td>
+            </tr>
+            <tr>
+              <td colspan="2">Total Pago:</td>
+              <td colspan="2">R$ {{ currentMonthPayment.paidAmount }}</td>
+            </tr>
+            <tr>
+              <td colspan="2">Restante:</td>
+              <td colspan="2">R$ {{ getRemainingAmount(currentMonthPayment) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="history-section">
+    <h2>Histórico de Pagamentos</h2>
+    <div class="monthly-payments">
+      <div class="payment-card" *ngFor="let payment of monthlyPayments">
+        <ng-container *ngIf="!isCurrentMonth(payment)">
+          <div class="month-header">
+            <h3>{{ months[payment.month] }} {{ payment.year }}</h3>
+            <label class="checkbox-container month-checkbox">
+              <input
+                type="checkbox"
+                [checked]="isMonthFullyPaid(payment)"
+                (change)="toggleMonthPayment(payment)"
+              />
+              <span class="checkmark"></span>
+              Marcar mês como {{ isMonthFullyPaid(payment) ? 'não pago' : 'pago' }}
+            </label>
+          </div>
+          
+          <div class="payment-details">
+            <table>
+              <thead>
+                <tr>
+                  <th>Matéria</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Data Pagamento</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let subject of payment.subjects; let i = index">
+                  <td>{{ subject.name }}</td>
+                  <td>R$ {{ subject.amount }}</td>
+                  <td>
+                    <label class="checkbox-container">
+                      <input
+                        type="checkbox"
+                        [checked]="subject.isPaid"
+                        (change)="togglePayment(payment, i)"
+                      />
+                      <span class="checkmark"></span>
+                      {{ subject.isPaid ? 'Pago' : 'Pendente' }}
+                    </label>
+                  </td>
+                  <td>{{ subject.paymentDate | date:'dd/MM/yyyy' }}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="2">Total do Mês:</td>
+                  <td colspan="2">R$ {{ payment.totalAmount }}</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Total Pago:</td>
+                  <td colspan="2">R$ {{ payment.paidAmount }}</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Restante:</td>
+                  <td colspan="2">R$ {{ getRemainingAmount(payment) }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

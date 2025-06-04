@@ -1,0 +1,200 @@
+.payment-history {
+  padding: 20px;
+
+  h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .current-month {
+    margin-bottom: 40px;
+
+    .payment-card.current {
+      border: 2px solid #2196F3;
+      box-shadow: 0 4px 8px rgba(33, 150, 243, 0.2);
+
+      .month-header {
+        background-color: #2196F3;
+        color: white;
+
+        h3 {
+          color: white;
+        }
+
+        .month-checkbox {
+          color: white;
+
+          .checkmark {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+          }
+
+          input:checked ~ .checkmark {
+            background-color: white;
+
+            &:after {
+              border-color: #2196F3;
+            }
+          }
+
+          &:hover .checkmark {
+            background-color: rgba(255, 255, 255, 0.3);
+          }
+        }
+      }
+    }
+  }
+
+  .history-section {
+    .monthly-payments {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+  }
+
+  .payment-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .month-header {
+      background: #f5f5f5;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h3 {
+        margin: 0;
+        color: #333;
+      }
+
+      .month-checkbox {
+        margin: 0;
+        font-size: 0.9em;
+      }
+    }
+
+    .payment-details {
+      padding: 15px;
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th, td {
+          padding: 8px;
+          text-align: left;
+          border-bottom: 1px solid #eee;
+        }
+
+        th {
+          font-weight: 600;
+          color: #666;
+        }
+
+        tfoot {
+          tr:last-child td {
+            border-bottom: none;
+          }
+
+          td {
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+
+  .checkbox-container {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    padding-left: 25px;
+    cursor: pointer;
+    user-select: none;
+
+    input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .checkmark {
+      position: absolute;
+      left: 0;
+      height: 18px;
+      width: 18px;
+      background-color: #eee;
+      border-radius: 3px;
+      transition: all 0.2s;
+
+      &:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+    }
+
+    input:checked ~ .checkmark {
+      background-color: #2196F3;
+
+      &:after {
+        display: block;
+      }
+    }
+
+    &:hover .checkmark {
+      background-color: #ccc;
+    }
+
+    input:checked ~ .checkmark:hover {
+      background-color: #0b7dda;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-history {
+    padding: 10px;
+
+    .current-month,
+    .history-section {
+      .payment-card {
+        margin-bottom: 20px;
+      }
+    }
+
+    .history-section {
+      .monthly-payments {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .payment-card {
+      .payment-details {
+        overflow-x: auto;
+
+        table {
+          font-size: 0.9em;
+
+          th, td {
+            padding: 6px;
+          }
+        }
+      }
+    }
+  }
+}

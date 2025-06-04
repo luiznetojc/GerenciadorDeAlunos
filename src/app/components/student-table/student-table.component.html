@@ -1,0 +1,62 @@
+<div class="student-table">
+  <div class="table-controls">
+    <div class="search-box">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        placeholder="Buscar por aluno ou matéria..."
+        class="search-input"
+      />
+    </div>
+    <button class="sort-button" (click)="toggleSortOrder()">
+      Ordenar por valor {{ sortOrder === 'asc' ? '↑' : '↓' }}
+    </button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome do Aluno</th>
+        <th>Matéria</th>
+        <th>Pagamento Mensal</th>
+        <th>Status do Pagamento</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let student of filteredStudents">
+        <tr *ngFor="let subject of student.subjects; let first = first">
+          <td [attr.rowspan]="student.subjects.length" *ngIf="first">
+            {{ student.name }}
+            <div class="payment-summary">
+              <p>Total: R$ {{ student.totalMonthlyPayment }}</p>
+              <p>Pago: R$ {{ calculateTotalPaid(student) }}</p>
+              <p>Restante: R$ {{ calculateRemainingPayment(student) }}</p>
+              <button class="view-history-btn" (click)="showPaymentHistory(student)">
+                Ver Histórico
+              </button>
+            </div>
+          </td>
+          <td>{{ subject.name }}</td>
+          <td>R$ {{ subject.monthlyPayment }}</td>
+          <td>
+            <label class="checkbox-container">
+              <input
+                type="checkbox"
+                [checked]="subject.isPaid"
+                (change)="togglePaymentStatus(student, subject)"
+              />
+              <span class="checkmark"></span>
+              {{ subject.isPaid ? 'Pago' : 'Pendente' }}
+            </label>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <app-payment-history
+    *ngIf="selectedStudent"
+    [student]="selectedStudent"
+    class="payment-history-modal"
+  ></app-payment-history>
+</div>
