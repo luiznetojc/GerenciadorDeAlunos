@@ -1,0 +1,171 @@
+<div *ngIf="isVisible" class="disciplines-overlay" (click)="onOverlayClick($event)">
+  <div class="disciplines-panel" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="panel-header">
+      <h3>
+        <i class="fas fa-book"></i>
+        Disciplinas de {{ student?.name }}
+      </h3>
+      <button class="close-btn" (click)="closePanel()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="panel-content">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Carregando disciplinas...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error" class="error-container">
+        <div class="error-message">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>{{ error }}</p>
+          <button class="retry-btn" (click)="loadStudentDisciplines()">
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div *ngIf="!loading">
+        <!-- Add Discipline Button -->
+        <div class="action-header">
+          <button 
+            class="add-discipline-btn" 
+            (click)="toggleAddForm()"
+            [disabled]="availableDisciplinesToAdd.length === 0">
+            <i class="fas fa-plus"></i>
+            {{ showAddForm ? 'Cancelar' : 'Adicionar Disciplina' }}
+          </button>
+          <div class="total-info">
+            <span class="total-label">Total Mensal:</span>
+            <span class="total-value">R$ {{ getTotalMonthlyPayment().toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <!-- Add Discipline Form -->
+        <div *ngIf="showAddForm" class="add-form-container">
+          <form [formGroup]="addDisciplineForm" (ngSubmit)="addDiscipline()" class="add-discipline-form">
+            <div class="form-group">
+              <label for="disciplineId">Disciplina:</label>
+              <select 
+                id="disciplineId" 
+                formControlName="disciplineId" 
+                class="form-control"
+                [class.is-invalid]="addDisciplineForm.get('disciplineId')?.invalid && addDisciplineForm.get('disciplineId')?.touched">
+                <option value="">Selecione uma disciplina</option>
+                <option *ngFor="let discipline of availableDisciplinesToAdd" [value]="discipline.id">
+                  {{ discipline.name }}
+                </option>
+              </select>
+              <div *ngIf="addDisciplineForm.get('disciplineId')?.invalid && addDisciplineForm.get('disciplineId')?.touched" 
+                   class="invalid-feedback">
+                Disciplina é obrigatória
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="monthlyPrice">Mensalidade (R$):</label>
+              <input 
+                type="number" 
+                id="monthlyPrice" 
+                formControlName="monthlyPrice" 
+                class="form-control"
+                [class.is-invalid]="addDisciplineForm.get('monthlyPrice')?.invalid && addDisciplineForm.get('monthlyPrice')?.touched"
+                placeholder="0.00"
+                step="0.01"
+                min="0.01">
+              <div *ngIf="addDisciplineForm.get('monthlyPrice')?.invalid && addDisciplineForm.get('monthlyPrice')?.touched" 
+                   class="invalid-feedback">
+                <span *ngIf="addDisciplineForm.get('monthlyPrice')?.hasError('required')">Mensalidade é obrigatória</span>
+                <span *ngIf="addDisciplineForm.get('monthlyPrice')?.hasError('min')">Mensalidade deve ser maior que R$ 0,00</span>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                (click)="toggleAddForm()">
+                Cancelar
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-primary" 
+                [disabled]="addDisciplineForm.invalid || savingDiscipline">
+                <span *ngIf="savingDiscipline" class="loading-spinner small"></span>
+                {{ savingDiscipline ? 'Salvando...' : 'Adicionar' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- No Disciplines Message -->
+        <div *ngIf="studentDisciplines.length === 0 && !showAddForm" class="no-disciplines">
+          <i class="fas fa-book-open"></i>
+          <h4>Nenhuma disciplina matriculada</h4>
+          <p>Este aluno ainda não está matriculado em nenhuma disciplina.</p>
+          <button 
+            class="btn btn-primary" 
+            (click)="toggleAddForm()"
+            [disabled]="availableDisciplinesToAdd.length === 0">
+            <i class="fas fa-plus"></i>
+            Adicionar primeira disciplina
+          </button>
+        </div>
+
+        <!-- Disciplines List -->
+        <div *ngIf="studentDisciplines.length > 0" class="disciplines-list">
+          <div 
+            *ngFor="let discipline of studentDisciplines" 
+            class="discipline-item">
+            <div class="discipline-info">
+              <div class="discipline-header">
+                <h4 class="discipline-name">{{ discipline.disciplineName }}</h4>
+                <span class="discipline-price">R$ {{ discipline.monthlyPrice.toFixed(2) }}</span>
+              </div>
+              <div class="discipline-details">
+                <span class="enrollment-date">
+                  <i class="fas fa-calendar"></i>
+                  Matriculado em: {{ discipline.enrollmentDate | date:'dd/MM/yyyy' }}
+                </span>
+              </div>
+            </div>
+            <div class="discipline-actions">
+              <button 
+                class="remove-btn" 
+                (click)="removeDiscipline(discipline)"
+                title="Remover disciplina">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Available Disciplines Warning -->
+        <div *ngIf="availableDisciplinesToAdd.length === 0 && !showAddForm" class="no-available-disciplines">
+          <i class="fas fa-info-circle"></i>
+          <p>Todas as disciplinas disponíveis já foram adicionadas para este aluno.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Summary -->
+    <div class="panel-footer" *ngIf="studentDisciplines.length > 0">
+      <div class="summary-info">
+        <div class="summary-item">
+          <span class="summary-label">Total de Disciplinas:</span>
+          <span class="summary-value">{{ studentDisciplines.length }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Pagamento Mensal Total:</span>
+          <span class="summary-value total">R$ {{ getTotalMonthlyPayment().toFixed(2) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

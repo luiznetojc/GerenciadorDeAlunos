@@ -1,0 +1,95 @@
+<div class="debt-panel-overlay" *ngIf="isVisible" (click)="onClose()">
+  <div class="debt-panel" (click)="$event.stopPropagation()" *ngIf="student">
+    <div class="panel-header">
+      <h3>Débitos - {{ student.name }}</h3>
+      <button class="close-button" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="panel-content">
+      <!-- Resumo -->
+      <div class="debt-summary">
+        <div class="summary-card total">
+          <div class="summary-label">Total Mensal</div>
+          <div class="summary-value">R$ {{ student.totalMonthlyPayment }}</div>
+        </div>
+        <div class="summary-card paid">
+          <div class="summary-label">Pago</div>
+          <div class="summary-value">R$ {{ getTotalPaid() }}</div>
+        </div>
+        <div class="summary-card pending">
+          <div class="summary-label">Pendente</div>
+          <div class="summary-value">R$ {{ getTotalPending() }}</div>
+        </div>
+      </div>
+
+      <!-- Matérias Pendentes -->
+      <div class="subjects-section" *ngIf="getPendingSubjects().length > 0">
+        <h4 class="section-title pending-title">
+          <i class="fas fa-exclamation-circle"></i>
+          Pendentes ({{ getPendingSubjects().length }})
+        </h4>
+        <div class="subjects-list">
+          <div class="subject-item pending" *ngFor="let subject of getPendingSubjects(); let i = index">
+            <div class="subject-info">
+              <div class="subject-name">{{ subject.name }}</div>
+              <div class="subject-amount">R$ {{ subject.monthlyPayment }}</div>
+            </div>
+            <label class="payment-toggle">
+              <input 
+                type="checkbox" 
+                [checked]="subject.isPaid"
+                (change)="onPaymentToggle(student.subjects.indexOf(subject))"
+              />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matérias Pagas -->
+      <div class="subjects-section" *ngIf="getPaidSubjects().length > 0">
+        <h4 class="section-title paid-title">
+          <i class="fas fa-check-circle"></i>
+          Pagas ({{ getPaidSubjects().length }})
+        </h4>
+        <div class="subjects-list">
+          <div class="subject-item paid" *ngFor="let subject of getPaidSubjects(); let i = index">
+            <div class="subject-info">
+              <div class="subject-name">{{ subject.name }}</div>
+              <div class="subject-amount">R$ {{ subject.monthlyPayment }}</div>
+              <div class="payment-date" *ngIf="subject.paymentDate">
+                Pago em: {{ subject.paymentDate | date:'dd/MM/yyyy' }}
+              </div>
+            </div>
+            <label class="payment-toggle">
+              <input 
+                type="checkbox" 
+                [checked]="subject.isPaid"
+                (change)="onPaymentToggle(student.subjects.indexOf(subject))"
+              />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado vazio -->
+      <div class="empty-state" *ngIf="student.subjects.length === 0">
+        <i class="fas fa-graduation-cap"></i>
+        <p>Nenhuma matéria encontrada para este aluno.</p>
+      </div>
+    </div>
+
+    <div class="panel-footer">
+      <button class="action-button secondary" (click)="onClose()">
+        Fechar
+      </button>
+      <button class="action-button primary">
+        <i class="fas fa-history"></i>
+        Ver Histórico Completo
+      </button>
+    </div>
+  </div>
+</div>

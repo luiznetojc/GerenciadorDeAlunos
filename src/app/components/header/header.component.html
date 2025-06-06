@@ -4,8 +4,22 @@
       <h1>Gerenciador de Alunos</h1>
     </div>
     <nav class="navigation">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Início</a>
-      <a routerLink="/students" routerLinkActive="active">Alunos</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+        <i class="icon">🏠</i>
+        Início
+      </a>
+      <a routerLink="/students" routerLinkActive="active" class="nav-link">
+        <i class="icon">👥</i>
+        Alunos
+      </a>
+      <a routerLink="/novo-aluno" routerLinkActive="active" class="nav-button btn-primary">
+        <i class="icon">➕</i>
+        Novo Aluno
+      </a>
+      <a routerLink="/nova-disciplina" routerLinkActive="active" class="nav-button btn-secondary">
+        <i class="icon">📚</i>
+        Nova Disciplina
+      </a>
     </nav>
   </div>
 </header>

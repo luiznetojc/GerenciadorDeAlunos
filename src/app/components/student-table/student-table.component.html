@@ -1,62 +1,113 @@
 <div class="student-table">
-  <div class="table-controls">
-    <div class="search-box">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        placeholder="Buscar por aluno ou matéria..."
-        class="search-input"
-      />
-    </div>
-    <button class="sort-button" (click)="toggleSortOrder()">
-      Ordenar por valor {{ sortOrder === 'asc' ? '↑' : '↓' }}
-    </button>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Carregando alunos...</p>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Nome do Aluno</th>
-        <th>Matéria</th>
-        <th>Pagamento Mensal</th>
-        <th>Status do Pagamento</th>
-      </tr>
-    </thead>
-    <tbody>
-      <ng-container *ngFor="let student of filteredStudents">
-        <tr *ngFor="let subject of student.subjects; let first = first">
-          <td [attr.rowspan]="student.subjects.length" *ngIf="first">
-            {{ student.name }}
-            <div class="payment-summary">
-              <p>Total: R$ {{ student.totalMonthlyPayment }}</p>
-              <p>Pago: R$ {{ calculateTotalPaid(student) }}</p>
-              <p>Restante: R$ {{ calculateRemainingPayment(student) }}</p>
-              <button class="view-history-btn" (click)="showPaymentHistory(student)">
-                Ver Histórico
-              </button>
-            </div>
-          </td>
-          <td>{{ subject.name }}</td>
-          <td>R$ {{ subject.monthlyPayment }}</td>
-          <td>
-            <label class="checkbox-container">
-              <input
-                type="checkbox"
-                [checked]="subject.isPaid"
-                (change)="togglePaymentStatus(student, subject)"
-              />
-              <span class="checkmark"></span>
-              {{ subject.isPaid ? 'Pago' : 'Pendente' }}
-            </label>
-          </td>
-        </tr>
-      </ng-container>
-    </tbody>
-  </table>
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container">
+    <div class="error-message">
+      <h3>Erro ao carregar dados</h3>
+      <p>{{ error }}</p>
+      <button class="retry-button" (click)="loadStudents()">Tentar novamente</button>
+    </div>
+  </div>
 
-  <app-payment-history
-    *ngIf="selectedStudent"
-    [student]="selectedStudent"
-    class="payment-history-modal"
-  ></app-payment-history>
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error">
+    <div class="table-controls">
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar por aluno ou matéria..."
+          class="search-input"
+        />
+      </div>
+      <button class="sort-button" (click)="toggleSortOrder()">
+        Ordenar por valor {{ sortOrder === 'asc' ? '↑' : '↓' }}
+      </button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nome do Aluno</th>
+          <th>Matrícula</th>
+          <th>Matéria</th>
+          <th>Pagamento Mensal</th>
+          <th>Status do Pagamento</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let student of filteredStudents">
+          <tr *ngFor="let subject of student.subjects; let first = first">
+            <td [attr.rowspan]="student.subjects.length" *ngIf="first">
+              {{ student.name }}
+              <div class="payment-summary">
+                <p>Total: R$ {{ student.totalMonthlyPayment }}</p>
+                <p>Pago: R$ {{ calculateTotalPaid(student) }}</p>
+                <p>Restante: R$ {{ calculateRemainingPayment(student) }}</p>
+                <div class="action-buttons">
+                  <button class="view-debts-btn" (click)="showDebtList(student)">
+                    <i class="fas fa-list"></i>
+                    Ver Débitos
+                  </button>
+                  <button class="view-history-btn" (click)="showPaymentHistory(student)">
+                    <i class="fas fa-history"></i>
+                    Histórico
+                  </button>
+                  <button class="manage-disciplines-btn" (click)="showDisciplineManagement(student)">
+                    <i class="fas fa-graduation-cap"></i>
+                    Disciplinas
+                  </button>
+                </div>
+              </div>
+            </td>
+            <td [attr.rowspan]="student.subjects.length" *ngIf="first">
+              {{ student.registrationNumber }}
+            </td>
+            <td>{{ subject.name }}</td>
+            <td>R$ {{ subject.monthlyPayment }}</td>
+            <td>
+              <label class="checkbox-container">
+                <input
+                  type="checkbox"
+                  [checked]="subject.isPaid"
+                  (change)="togglePaymentStatus(student, subject)"
+                />
+                <span class="checkmark"></span>
+                {{ subject.isPaid ? 'Pago' : 'Pendente' }}
+              </label>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <!-- Painel flutuante de histórico de pagamentos -->
+    <app-payment-history-panel
+      [student]="selectedStudentForHistory"
+      [isVisible]="showHistoryPanel"
+      (close)="closeHistoryPanel()"
+      (paymentUpdated)="onPaymentUpdated()"
+    ></app-payment-history-panel>
+
+    <!-- Painel flutuante de débitos -->
+    <app-debt-list-panel
+      [student]="selectedStudentForDebt"
+      [isVisible]="showDebtPanel"
+      (close)="closeDebtPanel()"
+      (paymentToggled)="onPaymentToggled($event)"
+    ></app-debt-list-panel>
+
+    <!-- Painel flutuante de gerenciamento de disciplinas -->
+    <app-student-disciplines-panel
+      [student]="selectedStudentForDisciplines"
+      [isVisible]="showDisciplinesPanel"
+      (close)="closeDisciplinesPanel()"
+      (disciplinesUpdated)="onDisciplinesUpdated()"
+    ></app-student-disciplines-panel>
+  </div>
 </div>

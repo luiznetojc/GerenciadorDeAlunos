@@ -1,0 +1,79 @@
+<div class="discipline-form-container">
+  <div class="form-header">
+    <h2>Cadastrar Nova Disciplina</h2>
+    <p>Preencha os dados da disciplina abaixo</p>
+  </div>
+
+  <div class="form-card">
+    <form [formGroup]="disciplineForm" (ngSubmit)="onSubmit()">
+      <!-- Nome da Disciplina -->
+      <div class="form-group">
+        <label for="name">Nome da Disciplina *</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="Ex: Matemática"
+          [class.error]="getFieldError('name')"
+        />
+        <div class="error-message" *ngIf="getFieldError('name')">
+          {{ getFieldError('name') }}
+        </div>
+      </div>
+
+      <!-- Preço Base -->
+      <div class="form-group">
+        <label for="basePrice">Preço Base (R$) *</label>
+        <div class="price-input-container">
+          <span class="currency-symbol">R$</span>
+          <input
+            type="number"
+            id="basePrice"
+            formControlName="basePrice"
+            placeholder="0,00"
+            step="0.01"
+            min="0"
+            [class.error]="getFieldError('basePrice')"
+          />
+        </div>
+        <div class="error-message" *ngIf="getFieldError('basePrice')">
+          {{ getFieldError('basePrice') }}
+        </div>
+        <div class="field-hint">
+          Este será o preço base para a disciplina. Pode ser ajustado individualmente para cada aluno.
+        </div>
+      </div>
+
+      <!-- Mensagens de Feedback -->
+      <div class="message success" *ngIf="successMessage">
+        <i class="icon-check"></i>
+        {{ successMessage }}
+      </div>
+
+      <div class="message error" *ngIf="error">
+        <i class="icon-alert"></i>
+        {{ error }}
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="onCancel()"
+          [disabled]="loading"
+        >
+          Cancelar
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary" 
+          [disabled]="!disciplineForm.valid || loading"
+        >
+          <span *ngIf="loading" class="loading-spinner"></span>
+          {{ loading ? 'Cadastrando...' : 'Cadastrar Disciplina' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

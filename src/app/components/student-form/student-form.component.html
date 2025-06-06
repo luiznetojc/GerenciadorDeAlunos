@@ -1,0 +1,85 @@
+<div class="student-form-container">
+  <div class="form-header">
+    <h2>Cadastrar Novo Aluno</h2>
+    <p>Preencha os dados do aluno abaixo</p>
+  </div>
+
+  <div class="form-card">
+    <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
+      <!-- Número de Matrícula -->
+      <div class="form-group">
+        <label for="registrationNumber">Número de Matrícula *</label>
+        <input
+          type="number"
+          id="registrationNumber"
+          formControlName="registrationNumber"
+          placeholder="Ex: 2024001"
+          [class.error]="getFieldError('registrationNumber')"
+        />
+        <div class="error-message" *ngIf="getFieldError('registrationNumber')">
+          {{ getFieldError('registrationNumber') }}
+        </div>
+      </div>
+
+      <!-- Nome Completo -->
+      <div class="form-group">
+        <label for="fullName">Nome Completo *</label>
+        <input
+          type="text"
+          id="fullName"
+          formControlName="fullName"
+          placeholder="Ex: João Silva Santos"
+          [class.error]="getFieldError('fullName')"
+        />
+        <div class="error-message" *ngIf="getFieldError('fullName')">
+          {{ getFieldError('fullName') }}
+        </div>
+      </div>
+
+      <!-- Data de Matrícula -->
+      <div class="form-group">
+        <label for="enrollmentDate">Data de Matrícula *</label>
+        <input
+          type="date"
+          id="enrollmentDate"
+          formControlName="enrollmentDate"
+          [class.error]="getFieldError('enrollmentDate')"
+        />
+        <div class="error-message" *ngIf="getFieldError('enrollmentDate')">
+          {{ getFieldError('enrollmentDate') }}
+        </div>
+      </div>
+
+      <!-- Mensagens de Feedback -->
+      <div class="message success" *ngIf="successMessage">
+        <i class="icon-check"></i>
+        {{ successMessage }}
+      </div>
+
+      <div class="message error" *ngIf="error">
+        <i class="icon-alert"></i>
+        {{ error }}
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="onCancel()"
+          [disabled]="loading"
+        >
+          Cancelar
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary" 
+          [disabled]="!studentForm.valid || loading"
+        >
+          <span *ngIf="loading" class="loading-spinner"></span>
+          {{ loading ? 'Cadastrando...' : 'Cadastrar Aluno' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
