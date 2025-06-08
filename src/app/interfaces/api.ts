@@ -30,16 +30,14 @@ export interface DisciplineResponseDto {
 export interface EnrollmentRequestDto {
   studentId: number;
   disciplineId: number;
-  enrollmentDate: string;
-  monthlyPrice: number;
+  discount?: number;
 }
 
 export interface EnrollmentResponseDto {
   id: number;
   studentId: number;
   disciplineId: number;
-  enrollmentDate: string;
-  monthlyPrice: number;
+  discount?: number;
 }
 
 // Monthly Payment DTOs
@@ -88,6 +86,7 @@ export interface StudentWithEnrollments extends StudentResponseDto {
 
 export interface EnrollmentWithDiscipline extends EnrollmentResponseDto {
   discipline: DisciplineResponseDto;
+  monthlyPrice: number;
 }
 
 export interface MonthlyPaymentWithDetails extends MonthlyPaymentResponseDto {

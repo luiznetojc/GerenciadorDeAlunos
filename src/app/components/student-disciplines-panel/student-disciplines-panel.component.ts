@@ -141,8 +141,7 @@ export class StudentDisciplinesPanelComponent implements OnInit, OnChanges {
       const enrollmentRequest: EnrollmentRequestDto = {
         studentId: this.student.id,
         disciplineId: parseInt(formValue.disciplineId),
-        enrollmentDate: new Date().toISOString(),
-        monthlyPrice: parseFloat(formValue.monthlyPrice)
+        discount: 0 // Sem desconto por padrão
       };
 
       const newEnrollment = await this.enrollmentService.create(enrollmentRequest).toPromise();
@@ -150,12 +149,13 @@ export class StudentDisciplinesPanelComponent implements OnInit, OnChanges {
       if (newEnrollment) {
         const discipline = this.availableDisciplines.find(d => d.id === newEnrollment.disciplineId);
         if (discipline) {
+          const monthlyPrice = discipline.basePrice - (newEnrollment.discount || 0);
           const newStudentDiscipline: StudentDiscipline = {
             enrollmentId: newEnrollment.id,
             disciplineId: newEnrollment.disciplineId,
             disciplineName: discipline.name,
-            monthlyPrice: newEnrollment.monthlyPrice,
-            enrollmentDate: newEnrollment.enrollmentDate
+            monthlyPrice: monthlyPrice,
+            enrollmentDate: new Date().toISOString()
           };
 
           this.studentDisciplines.push(newStudentDiscipline);

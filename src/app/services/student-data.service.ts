@@ -40,16 +40,17 @@ export class StudentDataService {
       disciplines: this.disciplineService.getAll()
     }).pipe(
       map(({ students, enrollments, disciplines }) => {
-        return students.map(student => {
-          const studentEnrollments = enrollments
-            .filter(enrollment => enrollment.studentId === student.id)
-            .map(enrollment => {
-              const discipline = disciplines.find(d => d.id === enrollment.disciplineId);
-              return {
-                ...enrollment,
-                discipline: discipline!
-              } as EnrollmentWithDiscipline;
-            });
+        return students.map(student => {        const studentEnrollments = enrollments
+          .filter(enrollment => enrollment.studentId === student.id)
+          .map(enrollment => {
+            const discipline = disciplines.find(d => d.id === enrollment.disciplineId);
+            const monthlyPrice = discipline ? discipline.basePrice - (enrollment.discount || 0) : 0;
+            return {
+              ...enrollment,
+              discipline: discipline!,
+              monthlyPrice
+            } as EnrollmentWithDiscipline;
+          });
 
           const totalMonthlyPayment = studentEnrollments
             .reduce((total, enrollment) => total + enrollment.monthlyPrice, 0);
@@ -76,9 +77,11 @@ export class StudentDataService {
       map(({ student, enrollments, disciplines }) => {
         const studentEnrollments = enrollments.map(enrollment => {
           const discipline = disciplines.find(d => d.id === enrollment.disciplineId);
+          const monthlyPrice = discipline ? discipline.basePrice - (enrollment.discount || 0) : 0;
           return {
             ...enrollment,
-            discipline: discipline!
+            discipline: discipline!,
+            monthlyPrice
           } as EnrollmentWithDiscipline;
         });
 
