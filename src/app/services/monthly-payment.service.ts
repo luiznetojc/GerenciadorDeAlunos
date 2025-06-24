@@ -42,4 +42,8 @@ export class MonthlyPaymentService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  markAsPaid(id: number): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}/mark-paid`, {});
+  }
 }

@@ -11,5 +11,9 @@ export const routes: Routes = [
   { 
     path: 'nova-disciplina', 
     loadComponent: () => import('./components/discipline-form/discipline-form.component').then(m => m.DisciplineFormComponent) 
+  },
+  { 
+    path: 'cobrancas', 
+    loadComponent: () => import('./components/billing-management/billing-management.component').then(m => m.BillingManagementComponent) 
   }
 ];
