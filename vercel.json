@@ -1,14 +1,15 @@
 {
-  "installCommand": "npm install",
-  "buildCommand": "npm run build -- --configuration=production",
-  "outputDirectory": "dist/gerenciador-de-alunos",
+  "version": 2,
+  "installCommand": "npm ci",
+  "buildCommand": "npx ng build --configuration=production",
+  "outputDirectory": "dist/gerenciador-de-alunos/browser",
   "framework": "angular",
   "env": {
     "NODE_ENV": "production"
   },
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
+  "functions": {
+    "app/**": {
+      "runtime": "nodejs18.x"
     }
   },
   "rewrites": [
